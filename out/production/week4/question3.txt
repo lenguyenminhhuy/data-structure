@@ -1,0 +1,22 @@
+int upperBound(int[] A, int S)
+    N = length(A)              initalize variable N
+    for i from 0 to (N - 1)    {O(N)} iterate from 0 to N-1
+        if (A[i] > S)          {O(1)} check if A[i] > S
+            return i           {O(1)} return i
+    return N                   {O(1)} return N
+
+=> total time complexity would be O(N)
+
+better solution: since the array already sorted, I will use binary search
+and then return right index because we are going to find the upper bound
+// time complexity: O(logN)
+int upperBound(int[] A, int S)
+    left = 0;
+    right = A.length -1;
+    while (True):
+    mid = (left + right) // 2
+    if (number >= mid) :
+        left = mid
+    else :
+        right = mid -1
+    return right;
