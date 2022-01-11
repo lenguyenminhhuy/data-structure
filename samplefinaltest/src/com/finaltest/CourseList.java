@@ -3,57 +3,77 @@ import java.sql.Array;
 import java.util.*;
 
 public class CourseList {
-    int maxSize = 24;
     int currentSize;
-    RMITCourse[] listOfCourses = new RMITCourse[maxSize];
-    ArrayList<ArrayList<String>> prerequisiteCourses = new ArrayList<>();
-    ArrayList<String> prerequisite;
+    ArrayList<RMITCourse> listOfCourses;
+
     public CourseList() {
-        currentSize = 0;
-        for (int i = 0; i<maxSize; i++){
-            listOfCourses[i] = null;
-        }
+        listOfCourses = new ArrayList<RMITCourse>();
     }
 
     public void addCourse(RMITCourse c){
-        for (int i = 0 ; i <= currentSize; i++){
-            if (listOfCourses[i] == null){
-                listOfCourses[i] = c;
-            }
-        }
-        currentSize++;
+        listOfCourses.add(c);
     }
 
     public void addPrerequisite(RMITCourse c, RMITCourse pre){
-        prerequisite = new ArrayList<>();
-        prerequisite.add(c.code);
-        prerequisite.add(pre.code);
-
-        prerequisiteCourses.add(prerequisite);
-
+        c.addPrerequisite(pre);
     }
 
     public boolean takeFirst(RMITCourse c){
-        boolean result = false;
-
-        for (int i = 0; i<prerequisiteCourses.size(); i++){
-            if (c.code.equals(prerequisiteCourses.get(i).get(1))) {
-                result = true;
-            }
-        }
-        System.out.println(result);
-        return result;
+        return (c.prerequisite.size() == 0);
     }
 
+    // topological sort
     public String coursesTaken(){
-        String courseName = null;
-        return courseName;
+        int size = listOfCourses.size();
+        ArrayList<RMITCourse> res = new ArrayList<>();
+        boolean[] added = new boolean[size];
+
+        for (int i = 0; i<size; i++){
+            // check is in added array
+            if (added[i]) {
+                continue;
+            }
+            RMITCourse c = listOfCourses.get(i);
+            boolean foundPre = false;
+            for (int j = 0; j< size; j++){
+                if (added[j]) {
+                    continue;
+                }
+                // avoid checking the same couse
+                if (i==j){
+                    continue;
+                }
+                RMITCourse c2 = listOfCourses.get(j);
+                // check whether c2 is prerequisite of c
+                if (c.prerequisite.contains(c2)){
+                    foundPre = true;
+                    break;
+                }
+            }
+            if (foundPre){
+                continue;
+            }
+            res.add(c);
+            added[i] = true;
+            for (int j = 0; j<size; j++){
+                RMITCourse c3 = listOfCourses.get(j);
+                if (c3.prerequisite.contains(c)){
+                    c3.prerequisite.remove(c);
+                }
+            }
+        }
+        // remove course if that course is a prerequisite of another course
+        StringBuilder courseSuggestion = null;
+        for (int i = 0; i< size; i++){
+            courseSuggestion.append(res.get(i).name);
+        }
+        return courseSuggestion.substring(2);
     }
 
     private void display(){
-        for (int i = 0; i<currentSize; i++){
+        for (int i = 0; i< listOfCourses.size(); i++){
             System.out.println("Course " + (i+1) );
-            System.out.println(listOfCourses[i]);
+            System.out.println(listOfCourses.get(i));
         }
     }
 
@@ -70,17 +90,15 @@ public class CourseList {
         list.display();
         list.addPrerequisite(c2, c1);  // make Programming 1 a prerequisite of Web Programming
         list.addPrerequisite(c3, c1);  // make Programming 1 a prerequisite of Data Structures
-        list.addPrerequisite(c4, c2);
-        list.takeFirst(c1);  // true
-        list.takeFirst(c2);  // true
-        list.takeFirst(c3);  // false
-        list.takeFirst(c4);  // false
+        list.addPrerequisite(c4, c2);  // make Web Programming a prerequisite of Database Application
+        System.out.println(list.takeFirst(c1));  // true
+        System.out.println(list.takeFirst(c2));  // false
+        System.out.println(list.takeFirst(c3));  // false
+        System.out.println(list.takeFirst(c4));  // false
+        System.out.println(list.coursesTaken()); // return "Programming 1, Web Programming, Data Structures, Database Application"
+
 
     }
-
-
-
-
 }
 
 class RMITCourse {
@@ -91,6 +109,11 @@ class RMITCourse {
     public RMITCourse(String name, String code){
         this.name = name;
         this.code = code;
+        prerequisite = new ArrayList<RMITCourse>();
+    }
+
+    public void addPrerequisite(RMITCourse pre){
+        prerequisite.add(pre);
     }
 
     public String toString(){
