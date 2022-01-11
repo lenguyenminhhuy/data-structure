@@ -29,17 +29,18 @@ public class CourseList {
         boolean[] added = new boolean[size];
 
         for (int i = 0; i<size; i++){
-            // check is in added array
+            // make sure the course has not been added
             if (added[i]) {
                 continue;
             }
             RMITCourse c = listOfCourses.get(i);
             boolean foundPre = false;
             for (int j = 0; j< size; j++){
+                // make sure the course has not been added
                 if (added[j]) {
                     continue;
                 }
-                // avoid checking the same couse
+                // avoid checking the same course
                 if (i==j){
                     continue;
                 }
@@ -53,8 +54,10 @@ public class CourseList {
             if (foundPre){
                 continue;
             }
+            // if not found prerequisite, add the course to result list and mark as added
             res.add(c);
             added[i] = true;
+            // remove course if that course is a prerequisite of another course
             for (int j = 0; j<size; j++){
                 RMITCourse c3 = listOfCourses.get(j);
                 if (c3.prerequisite.contains(c)){
@@ -62,7 +65,6 @@ public class CourseList {
                 }
             }
         }
-        // remove course if that course is a prerequisite of another course
         StringBuilder courseSuggestion = null;
         for (int i = 0; i< size; i++){
             courseSuggestion.append(res.get(i).name);
