@@ -65,9 +65,9 @@ public class CourseList {
                 }
             }
         }
-        StringBuilder courseSuggestion = null;
+        String courseSuggestion = "";
         for (int i = 0; i< size; i++){
-            courseSuggestion.append(res.get(i).name);
+            courseSuggestion += ", " + res.get(i).name;
         }
         return courseSuggestion.substring(2);
     }
