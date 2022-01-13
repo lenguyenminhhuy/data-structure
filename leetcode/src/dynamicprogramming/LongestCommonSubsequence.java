@@ -42,9 +42,30 @@ public class LongestCommonSubsequence {
         return longestSequence;
     }
 
+    public static boolean isSequence(String a, String b){
+
+        int aIdx = 0;
+        int bIdx = 0;
+        while (aIdx < a.length() && bIdx < b.length()){
+            if (a.charAt(aIdx) == b.charAt(bIdx)){
+                aIdx++;
+            }
+            bIdx++;
+        }
+
+        return aIdx==a.length();
+    }
+
+
+
     public static void main(String args[]){
         char[] A = {'A', 'B', 'C', 'D', 'H'};
         char[] B = {'A', 'C', 'H'};
         System.out.println(lcs(A, B));
+
+        String a = "ABC";
+        String b = "ADCBF";
+        System.out.println(isSequence(a,b));
+
     }
 }
